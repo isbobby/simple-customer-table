@@ -5,11 +5,12 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(128), unique=True, nullable=False)
-    active = db.Column(db.Boolean(), default=True, nullable=False)
+    username = db.Column(db.String(128), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
 
-    def __init__(self, email):
-        self.email = email
+    def __init__(self, email, password):
+        self.username = username
+        self.password = password
 
 class Customers(db.Model):
     __tablename__ = "customers"
