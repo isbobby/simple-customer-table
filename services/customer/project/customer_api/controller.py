@@ -25,14 +25,15 @@ def customerGetController():
         try:
             n = int(n_string)
         except ValueError:
-            return make_response(400, "Please try again with a different argument n. n should be an integer")
-        
+            reply_string = json.dumps("Please try again with a different argument n. n should be an integer")
+            return make_response(400, reply_string)
         # ensure n is int and bigger than 0, if it isn't inform the user
         try:
             assert(n >= 0)
         except AssertionError:
             # user enters wrong n argument, return an error message
-            return make_response(400, "Please try again with a different argument n. n should be an integer larger than 0")
+            reply_string = json.dumps("Please try again with a different argument n. n should be an integer larger than 0")
+            return make_response(400, reply_string)
 
         # return n youngest customers
         return _customer_get(n)
@@ -45,7 +46,7 @@ def _customer_get(n):
     try:
         customers = Customers.query.order_by(Customers.dob.desc()).limit(n).all()
     except Exception:
-        return make_response(500, "Error in retrieving customers, contact admin for assistance")
+        return make_response(500, json.dumps("Error in retrieving customers, contact admin for assistance"))
 
     # populate response lists
     customer_list = []
@@ -69,7 +70,7 @@ def _customer_get_all():
     try:
         customers = Customers.query.all()
     except Exception:
-        return make_response(500, "Error in retrieving customers, contact admin for assistance")
+        return make_response(500, json.dumps("Error in retrieving customers, contact admin for assistance"))
 
     # populate response lists
     customer_list = []
@@ -96,7 +97,8 @@ def customerCreateController():
     try:
         data_obj = json.loads(request.data)
     except json.decoder.JSONDecodeError:
-        return make_response(400, "Please ensure you have sent JSON in to correct format, see developer's guide for more information")
+        reply_string = json.dumps("Please ensure you have sent JSON in to correct format, see developer's guide for more information")
+        return make_response(400, reply_string)
     
     # converting dob string to date object (YYYY-MM-DD) as specified in doc
     try:
@@ -104,9 +106,11 @@ def customerCreateController():
         customer_name = data_obj["name"]
         customer_dob_date = datetime.strptime(customer_dob_string, '%Y-%m-%d').date()
     except KeyError:
-        return make_response(400, "Please ensure you have included name and dob of customer, see developer's guide for more information")
+        reply_string = json.dumps("Please ensure you have included name and dob of customer, see developer's guide for more information")
+        return make_response(400, reply_string)
     except ValueError:
-        return make_response(400, "Please ensure you have provided valid dob of customer, see developer's guide for more information")
+        reply_string = json.dumps("Please ensure you have provided valid dob of customer, see developer's guide for more information")
+        return make_response(400, reply_string)
 
     # get the last updated time (now)
     time_now = datetime.now()
@@ -115,7 +119,7 @@ def customerCreateController():
     entry = Customers(customer_name, customer_dob_date, time_now)
     db.session.add(entry)
     db.session.commit()
-    return make_response(200, f"You have added {customer_name} who is born on {customer_dob_string}, updated at {time_now}")
+    return make_response(200, json.dumps(f"You have added {customer_name} who is born on {customer_dob_string}, updated at {time_now}"))
 
 
 @customer_api.route("/customers/update",  methods=['POST'])
@@ -123,8 +127,9 @@ def customerUpdateController():
     try:
         data_obj = json.loads(request.data)
     except json.decoder.JSONDecodeError:
-        return make_response(400, "Please ensure you have sent JSON in to correct format, see developer's guide for more information")
-    
+        reply_string = json.dumps("Please ensure you have sent JSON in to correct format, see developer's guide for more information")
+        return make_response(400, reply_string)
+
     # converting dob string to date object (YYYY-MM-DD) as specified in doc
     try:
         customer_id = int(data_obj["id"])
@@ -132,37 +137,47 @@ def customerUpdateController():
         customer_name = data_obj["name"]
         customer_dob_date = datetime.strptime(customer_dob_string, '%Y-%m-%d').date()
     except KeyError:
-        return make_response(400, "Please ensure you have included name and dob of customer, see developer's guide for more information")
+        reply_string = json.dumps("Please ensure you have included name and dob of customer, see developer's guide for more information")
+        return make_response(400, reply_string)
     except ValueError:
-        return make_response(400, "Please ensure you have provided valid dob of customer, see developer's guide for more information")
+        reply_string = json.dumps("Please ensure you have provided valid dob of customer, see developer's guide for more information")
+        return make_response(400, reply_string)
 
     # get the last updated time (now)
     time_now = datetime.now()
     
-    # update_customer = Customers.query.filter(Customers.id==customer_id).one()
+    # locate the customer to be updated
     try:
         update_customer = Customers.query.filter(Customers.id==customer_id).one()
     except sqlalchemy.orm.exc.NoResultFound:
-        return make_response(400, "Please ensure you have provided valid customer id")
+        reply_string = json.dumps("Please ensure you have provided valid customer id")
+        return make_response(400, reply_string)
     
     update_customer.dob = customer_dob_date
     update_customer.name = customer_name
     update_customer.updated_at = time_now
     db.session.commit()
-    return make_response(200, f"You have updated customer whose id is {customer_id}")
+    return make_response(200, json.dumps(f"You have updated customer whose id is {customer_id}"))
 
 
-
+@customer_api.route("/customers/delete",  methods=['DELETE'])
 def _customer_delete():
-    return "200"
+    # get the id of the customer to be deleted
+    try:
+        customer_id = int(request.args.get('id'))
+    except ValueError:
+        reply_string = "Please ensure you have provided valid customer id"
+        response_body = json.dumps(reply_string)
+        return make_response(400, response_body)
 
+    # locate the customer to be deleted
+    try:
+        delete_customer = Customers.query.filter(Customers.id==customer_id).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        reply_string = "This customer does not exist"
+        response_body = json.dumps(reply_string)
+        return make_response(400, response_body)
 
-
-"""
-{
-  "name": "Galwin",
-  "dob" : "2010-12-21"
-}
-"""
-
-
+    db.session.delete(delete_customer)
+    db.session.commit()
+    return make_response(200, f"You have updated customer whose id is {customer_id}")
