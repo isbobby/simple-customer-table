@@ -4,6 +4,7 @@ import json
 import flask
 import sqlalchemy
 from flask import Blueprint, request, Response
+from flask_jwt_extended import jwt_required
 
 from project.database import db
 from .model import Customers, User
@@ -12,6 +13,7 @@ from .utils import make_response
 customer_api = Blueprint('customer_api', __name__)
 
 @customer_api.route("/customers",  methods=['GET'])
+@jwt_required()
 def customerGetController():
     if flask.request.method == 'GET':
         # number n allows users to specify the number of youngest customers
@@ -93,6 +95,7 @@ def _customer_get_all():
 
 
 @customer_api.route("/customers/create",  methods=['POST'])
+@jwt_required()
 def customerCreateController():
     try:
         data_obj = json.loads(request.data)
@@ -123,6 +126,7 @@ def customerCreateController():
 
 
 @customer_api.route("/customers/update",  methods=['POST'])
+@jwt_required()
 def customerUpdateController():
     try:
         data_obj = json.loads(request.data)
@@ -161,6 +165,7 @@ def customerUpdateController():
 
 
 @customer_api.route("/customers/delete",  methods=['DELETE'])
+@jwt_required()
 def _customer_delete():
     # get the id of the customer to be deleted
     try:
