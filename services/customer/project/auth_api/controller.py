@@ -10,7 +10,7 @@ from flask_jwt_extended import get_jwt
 
 
 from project.config import ACCESS_EXPIRES
-from .model import User
+from project.model import User
 from project.utils import key_generator
 from project.myRedis import jwt_redis_block_list, redis_session_list
 

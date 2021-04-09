@@ -9,7 +9,7 @@ from flask_jwt_extended import jwt_required
 
 
 from project.database import db
-from .model import Customers
+from project.model import Customers
 
 customer_api = Blueprint('customer_api', __name__)
 

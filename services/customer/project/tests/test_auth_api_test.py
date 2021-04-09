@@ -1,9 +1,10 @@
 import os
 import tempfile
 from datetime import datetime
-import unittest
+
 
 import pytest
+
 
 from project import app, db
 from ..model import User, Customers
@@ -56,5 +57,4 @@ def test_login_missing_attribute(client):
     ), follow_redirects=True)
 
     assert response.status, 400
-    assert response.data, "Please ensure you have provided both username and password see developer's guide for more " \
-                          "information "
+    assert response.data, "Please ensure you have provided both username and password see developer's guide for more information"

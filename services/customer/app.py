@@ -5,7 +5,7 @@ from flask.cli import FlaskGroup
 
 
 from project import app, db
-from project.customer_api.model import User, Customers
+from project.model import User, Customers
 
 
 cli = FlaskGroup(app)
