@@ -1,9 +1,12 @@
-from datetime import datetime 
+from datetime import datetime
+
 
 from flask.cli import FlaskGroup
 
+
 from project import app, db
 from project.customer_api.model import User, Customers
+
 
 cli = FlaskGroup(app)
 
@@ -12,7 +15,7 @@ cli = FlaskGroup(app)
 def create_db():
     db.drop_all()
     db.create_all()
-    ### Create a test user and some dummy data
+    # Create a test user and some dummy data
     test_user = User("klinify", "klinify")
 
     now = datetime.now()

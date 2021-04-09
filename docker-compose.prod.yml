@@ -20,6 +20,8 @@ services:
       - POSTGRES_USER=klinify
       - POSTGRES_PASSWORD=klinify
       - POSTGRES_DB=customer_table
+  redis:
+    image: "redis:alpine"
 
 volumes:
   postgres_data:
