@@ -15,7 +15,7 @@ Unlike development mode, running compose.dev will not generate dummy data.
 ## Files that you may want to review
 __.env.dev/prod__
 
-These provides app config details such as Database URI and Keys. In this repository they are exposed for convenience, you may wish to change these.
+These provide app config details such as Database URI and Keys. In this repository they are exposed for convenience, you may wish to change these.
 
 __Dockerfile__
 
@@ -29,11 +29,11 @@ To debug/develop using localhost, go to services/customers and make slight chang
 
 __project/config.py__
 
-The Env files are exposed using docker-compose, you may wish to change to ENV variables to your own variables in this the config class. For example, you should change the database URI to that of your local database.
+The Env files are exposed using docker-compose, you may wish to change to ENV variables to your variables in this config class. For example, you should change the database URI to that of your local database.
 
 __myRedis.py__
 
-The server runs redis on an image named 'redis', if you are starting your own redis service on localhost, you should change the localhost name to 'localhost' (make this change in project/init.py as well).
+The server runs redis on an image named 'redis', if you are starting your redis service on localhost, you should change the localhost name to 'localhost' (make this change in project/init.py as well).
 
 Once done, you can fire up localhost using `python3 app.py create_db` or `python3 app.py create_db_demo`(creates some dummy for you), and then `python3 app.py run`. You should also start a redis server on your localhost.
 
@@ -44,44 +44,46 @@ You can see the collection of APIs and how to use them using the following link,
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://god.postman.co/run-collection/01a883b9bec6e5a8ad50?action=collection%2Fimport)
 ## Auth
-/login `POST`
-Retrieves customer username and password from the post request, then calls the ORM's check_hash to check if password matches. If so, return the access token to the customer.
+/login `POST`  
+Retrieves customer username and password from the post request, then calls the ORM's check_hash to check if the password matches. If so, return the access token to the customer.
 
-/logout `DELETE`
-Once a user chooses to logout, his JWT token will be stored in the Redis cache where all the expired tokens are stored. If a token is expired, users cannot use it to access restricted routes.
+/logout `DELETE`  
+Once a user chooses to log out, his JWT token will be stored in the Redis cache where all the expired tokens are stored. If a token is expired, users cannot use it to access restricted routes.
 ## Customer
-/customers `GET` 
+/customers `GET`   
 Gets all the customers in the database. Requires JWT token that is not expired.
 
-/customers?numbers=n `GET` 
+/customers?numbers=n `GET`  
 Gets N youngest customers in the database, sorting is done using sqlalchemy
 
-/customers/delete?id=n `DELETE` 
-First ensures that this customer exists in the database, then performs deletion using sqlalchemy and commit the session after sucsess.
+/customers/delete?id=n `DELETE`  
+First ensures that this customer exists in the database, then performs deletion using sqlalchemy and commit the session after success.
 
 
-/customers/create `POST`
-Retrieves customer name and dob from request body and insert them in the database. The updated at field is updated using datetime.now()
+/customers/create `POST`  
+Retrieves customer name and dob from the request body and insert them in the database. The updated at field is updated using datetime.now()
 
-/customers/update `POST`
-Retrieves customer id, name and dob from request body and insert them in the database. It will search for hte customer for given ID first then then overwrites existing attributes.
+/customers/update `POST`  
+Retrieves customer id, name and dob from the request body and insert them in the database. It will search for the customer for the given ID first then overwrites existing attributes.
 ## Defense against Replay Attack (stolen access token)
 ### Provision of session cookies
-/session_cookie_experiment `GET`
-A session ID is randomly generated and passed back to the user along with access token as aa cookie. This cookie is stored in the server side redis cache. When attackers try to access a route using the stolen token without the session cookie, we can detect there's a replay attack.
+/session_cookie_experiment `GET`  
+A session ID is randomly generated and passed back to the user along with an access token as a cookie. This cookie is stored in the server-side redis cache. When attackers try to access a route using the stolen token without the session cookie, we can detect there's a replay attack.
 
 However, it only tackles very rare scenarios where the session id cookie is not also stolen. Hence it is not robust enough especially when the cookies might also get stolen by attackers.
 ### Rate limiting
-A characteristic of replay attack is the high frequency of requests, a rate limiting declarator can be added to important routes to limit the rate of access. This can be done using python's rate limiter packages.
+A characteristic of a replay attack is the high frequency of requests, a rate-limiting declarator can be added to important routes to limit the rate of access. This can be done using python's rate limiter packages.
 
 ### Process ID
 Instead of tagging the access token with a session ID, we can tag the process with a unique and random key to ensure there's always only one session.
 
 # Testing
-Testing is not done sufficiently on this project. Right now, a pytest package is installed and some simple tests are written in the tests directory. The next step will be 
+Testing is not done sufficiently on this project. Right now, a pytest package is installed and some simple tests are written in the tests directory. Tests can be executed using `pytest`
 
-Increase test coverage
+The next steps will be 
 
-Implement auto unit testing in docker-compose or other CI/CD pipelines
+1. Increase test coverage
+
+2. Implement auto unit testing in docker-compose or other CI/CD pipelines
 
 
