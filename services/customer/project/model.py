@@ -3,7 +3,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from project.database import db
 
 
-# Create models
 class User(db.Model):
     __tablename__ = "users"
     __table_args__ = {'extend_existing': True}

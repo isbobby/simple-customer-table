@@ -50,9 +50,9 @@ def test_login(client):
             password='klinify'
         )
 
-        dummy_data_json = jsonify(dummy_data)
+        dummy_data_json = dummy_data
         
-        response = client.post('/login', data=dummy_data_json, content_type='application/json', follow_redirects=True)
+        # response = client.post('/login', data=dummy_data_json, content_type='application/json', follow_redirects=True)
         
         # assert (response.status_code == 200)
     

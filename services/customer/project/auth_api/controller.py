@@ -48,7 +48,8 @@ def login():
 
     # check password match
     if attempt_user.check_password(attempt_password):
-        access_token = create_access_token(identity="test")
+        # attach the username to the identity
+        access_token = create_access_token(identity=attempt_username)
 
         # make a session cookie to store at client side but also
         # store this in the server side
@@ -56,6 +57,8 @@ def login():
             jsonify(access_token=access_token),
             200,
         )
+
+        # attempt in addressing replay attack
         session_id = key_generator(126)
         response.set_cookie('session', session_id)
 

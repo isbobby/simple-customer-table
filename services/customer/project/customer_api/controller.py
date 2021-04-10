@@ -70,7 +70,7 @@ def _customer_get(n):
         "customers": customer_list
     }
 
-    return make_response(200, json.dumps(response_body))
+    return make_response(json.dumps(response_body), 200)
 
 
 def _customer_get_all():
@@ -151,11 +151,11 @@ def customerUpdateController():
         customer_dob_date = datetime.strptime(customer_dob_string, '%Y-%m-%d').date()
     except KeyError:
         reply_string = json.dumps(
-            "Please ensure you have included name and dob of customer, see developer's guide for more information")
+            "Please ensure you have included id, new name and dob of customer, see developer's guide for more information")
         return make_response(reply_string, 400)
     except ValueError:
         reply_string = json.dumps(
-            "Please ensure you have provided valid dob of customer, see developer's guide for more information")
+            "Please ensure you have included id, new name and dob of customer, see developer's guide for more information")
         return make_response(reply_string, 400)
 
     # get the last updated time (now)
@@ -196,4 +196,4 @@ def _customer_delete():
 
     db.session.delete(delete_customer)
     db.session.commit()
-    return make_response(f"You have updated customer whose id is {customer_id}", 200)
+    return make_response(f"You have deleted customer whose id is {customer_id}", 200)

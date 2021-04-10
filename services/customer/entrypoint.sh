@@ -13,8 +13,8 @@ fi
 
 if [ "$FLASK_ENV" = "development" ]
 then
-    echo "Creating the database tables..."
-    python app.py create_db
+    echo "Creating the database tables (dummy)..."
+    python app.py create_db_demo
     echo "Tables created"
 fi
 
